@@ -15,15 +15,21 @@ static inline otIp6Address getServerIp(void)
   return address;
 }
 
-void sendBatteryPacket(otSockAddr *socket, otMessageInfo *aMessageInfo)
+void send(otSockAddr *socket,
+          otMessageInfo *aMessageInfo,
+          void *payload,
+          uint32_t payloadSize)
 {
+  otMessage *aRequest = NULL;
+  otError error = 0;
+
   aMessageInfo->mHopLimit = 0;  // default
   aMessageInfo->mPeerAddr = socket->mAddress;
   aMessageInfo->mPeerPort = socket->mPort;
   aMessageInfo->mSockAddr = *otThreadGetMeshLocalEid(esp_openthread_get_instance());
   aMessageInfo->mSockPort = CONFIG_COAP_SOCK_PORT;
 
-  otMessage *aRequest = otCoapNewMessage(esp_openthread_get_instance(), NULL);
+  aRequest = otCoapNewMessage(esp_openthread_get_instance(), NULL);
   if (aRequest == NULL)
   {
     otLogCritPlat("Failed to create CoAP request.");
@@ -33,19 +39,31 @@ void sendBatteryPacket(otSockAddr *socket, otMessageInfo *aMessageInfo)
   otCoapMessageInit(aRequest, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST);
   otCoapMessageGenerateToken(aRequest, OT_COAP_DEFAULT_TOKEN_LENGTH);
 
-  otError error = otCoapMessageAppendUriPathOptions(aRequest, BATTERY_URI);
+  error = otCoapMessageAppendUriPathOptions(aRequest, BATTERY_URI);
   if (error != OT_ERROR_NONE)
   {
-    otLogCritPlat("Failed to Append URI Path Options. Reason: %s", PrintError(error));
+    otLogCritPlat("Failed to Append URI Path Options. Reason: %s.", PrintError(error));
     return;
   }
 
   error = otCoapMessageSetPayloadMarker(aRequest);
   if (error != OT_ERROR_NONE)
   {
-    otLogCritPlat("Failed to Set Payload Marker. Reason: %s", PrintError(error));
+    otLogCritPlat("Failed to Set Payload Marker. Reason: %s.", PrintError(error));
   }
 
+  error = otMessageAppend(aRequest, payload, payloadSize);
+  if (error != OT_ERROR_NONE)
+  {
+    otLogCritPlat("Failed to add payload to message. Reason: %s.", PrintError(error));
+  }
+
+  error = otCoapSendRequest(esp_openthread_get_instance(), aRequest, aMessageInfo,
+                            NULL, NULL);
+  if (error != OT_ERROR_NONE)
+  {
+    otLogCritPlat("Failed to send CoAP request. Reason: %s.", PrintError(error));
+  }
   return;
 }
 
@@ -57,9 +75,13 @@ void app_main(void)
 
   otSockAddr socket;
   otMessageInfo aMessageInfo;
+  uuid deviceId;
+  BatteryPayload payload;
 
   EmptyMemory(&socket, sizeof(otSockAddr));
   EmptyMemory(&aMessageInfo, sizeof(aMessageInfo));
+  EmptyMemory(&aMessageInfo, sizeof(uuid));
+  EmptyMemory(&payload, sizeof(BatteryPayload));
 
   otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SOCK_PORT);
   if (error != OT_ERROR_NONE)
@@ -71,7 +93,9 @@ void app_main(void)
   socket.mAddress = getServerIp();
   socket.mPort = CONFIG_COAP_SERVER_PORT;
 
-  sendBatteryPacket(&socket, &aMessageInfo);
+  generateUUID(&deviceId);
+  payload = createBatteryPayload(deviceId);
+  send(&socket, &aMessageInfo, (void *) &payload, sizeof(BatteryPayload));
 
   return;
 }

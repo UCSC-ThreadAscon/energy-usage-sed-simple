@@ -11,6 +11,7 @@
  * software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
  * CONDITIONS OF ANY KIND, either express or implied.
 */
+#pragma once
 
 #include <stdint.h>
 #include <stdio.h>
@@ -38,6 +39,9 @@
 #define TAG "energy_usage_experiment"
 
 void init(void);
+
+void setTxPower(void);
+otError getTxPower(int8_t *aPowerAddr);
 
 void create_config_network(otInstance *instance);
 esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t *config);

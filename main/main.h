@@ -4,8 +4,6 @@
 #include "esp_random.h"
 #include <openthread/coap.h>
 
-#define BATTERY_URI "battery"
-
 /**
  * Empties all memory for `size` bytes starting at memory address `pointer`.
  *

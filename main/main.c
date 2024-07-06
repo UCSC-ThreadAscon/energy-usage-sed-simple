@@ -5,6 +5,10 @@
  */
 #include "main.h"
 
+#define BATTERY_URI "battery"
+#define SLEEP_TIME_SECONDS 30
+#define SLEEP_TIME_US SECONDS_TO_US(SLEEP_TIME_SECONDS)
+
 #define PrintError(error) otThreadErrorToString(error)
 
 static inline otIp6Address getServerIp(void)

@@ -9,6 +9,8 @@
 #define ONE_DAY_IN_SECONDS 30
 #define ONE_DAY_IN_US SECONDS_TO_US(ONE_DAY_IN_SECONDS)
 
+static struct timeval wakeup;
+
 #define PrintError(error) otThreadErrorToString(error)
 
 static inline otIp6Address getServerIp(void)
@@ -18,13 +20,26 @@ static inline otIp6Address getServerIp(void)
   otIp6AddressFromString(CONFIG_SERVER_IP_ADDRESS, &address);
   return address;
 }
+
+/**
+ * If the duration of the wakeup is >= 30 seconds; TOO LONG. Stop sending packets, and
+ * stop going to sleep. When the device stops sending packets, I know the experiment is
+ * invalid and to rerun it.
+ */
 void responseCallback(void *aContext,
                      otMessage *aMessage,
                      const otMessageInfo *aMessageInfo,
                      otError aResult)
 {
-  ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(ONE_DAY_IN_US));
-  esp_deep_sleep_start();
+  struct timeval current = getTimevalNow();
+  uint64_t wakeupDurationUs = timeDiffUs(wakeup, current);
+
+  if (wakeupDurationUs < ONE_DAY_IN_US)
+  {
+    uint64_t sleepTimeUs = ONE_DAY_IN_US - wakeupDurationUs;
+    ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
+    esp_deep_sleep_start();
+  }
   return;
 }
 
@@ -82,6 +97,7 @@ void send(otSockAddr *socket,
 
 void app_main(void)
 {
+  wakeup = getTimevalNow();
   init();
   checkConnection(esp_openthread_get_instance());
   printMeshLocalEid(esp_openthread_get_instance());

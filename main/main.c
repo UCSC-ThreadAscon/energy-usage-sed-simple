@@ -20,9 +20,13 @@ void app_main(void)
   printMeshLocalEid(esp_openthread_get_instance());
 
   otSockAddr socket;
-  EmptyMemory(&socket, sizeof(otSockAddr));
+  otMessageInfo aMessageInfo;
+  otMessage *aRequest;
 
-  otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SERVER_PORT);
+  EmptyMemory(&socket, sizeof(otSockAddr));
+  EmptyMemory(&aMessageInfo, sizeof(aMessageInfo));
+
+  otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SOCK_PORT);
   if (error != OT_ERROR_NONE)
   {
     otLogCritPlat("Cannot start CoAP service. Reason: %s.", otThreadErrorToString(error));
@@ -31,6 +35,16 @@ void app_main(void)
 
   socket.mAddress = getServerIp();
   socket.mPort = CONFIG_COAP_SERVER_PORT;
+
+  /**
+   * Send a Battery packet as a CoAP Request.
+   */
+
+  aMessageInfo.mHopLimit = 0;  // default
+  aMessageInfo.mPeerAddr = socket.mAddress;
+  aMessageInfo.mPeerPort = socket.mPort;
+  aMessageInfo.mSockAddr = *otThreadGetMeshLocalEid(esp_openthread_get_instance());
+  aMessageInfo.mSockPort = CONFIG_COAP_SOCK_PORT;
 
   return;
 }

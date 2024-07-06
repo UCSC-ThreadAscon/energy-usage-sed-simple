@@ -28,6 +28,12 @@ menu "OpenThread Deep Sleep Sender"
       help
           Sets the port used by CoAP server side.
 
+    config COAP_SOCK_PORT
+      int 'The port number for the CoAP socket.'
+      default 5683
+      help
+          Sets the port used by the CoAP socket for this device.
+
     config SERVER_IP_ADDRESS
       string 'The IP address of the server to send CoAP packets to.'
       help

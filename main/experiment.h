@@ -1,6 +1,6 @@
 #pragma once
 
-#define NUM_EVENTS_FRONT_DOOR 36
+#define NUM_EVENTS_FRONT_DOOR 365
 #define NUM_EVENTS_AIR_MONITOR 10
 #define NUM_EVENTS_BACK_DOOR 2
 

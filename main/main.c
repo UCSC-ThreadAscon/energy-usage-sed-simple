@@ -9,6 +9,7 @@
 #include "math.h"
 
 #define BATTERY_URI "battery"
+#define EVENT_URI "event"
 #define ONE_DAY_IN_SECONDS 30
 #define ONE_DAY_IN_US SECONDS_TO_US(ONE_DAY_IN_SECONDS)
 
@@ -63,7 +64,8 @@ void responseCallback(void *aContext,
 void send(otSockAddr *socket,
           otMessageInfo *aMessageInfo,
           void *payload,
-          uint32_t payloadSize)
+          uint32_t payloadSize,
+          const char *uri)
 {
   otMessage *aRequest = NULL;
   otError error = 0;
@@ -84,7 +86,7 @@ void send(otSockAddr *socket,
   otCoapMessageInit(aRequest, OT_COAP_TYPE_CONFIRMABLE, OT_COAP_CODE_POST);
   otCoapMessageGenerateToken(aRequest, OT_COAP_DEFAULT_TOKEN_LENGTH);
 
-  error = otCoapMessageAppendUriPathOptions(aRequest, BATTERY_URI);
+  error = otCoapMessageAppendUriPathOptions(aRequest, uri);
   if (error != OT_ERROR_NONE)
   {
     otLogCritPlat("Failed to Append URI Path Options. Reason: %s.", PrintError(error));
@@ -172,17 +174,18 @@ void app_main(void)
   /**
    * Send an event packet every "floor(365/n)" wakeups.
    */
-  // uint32_t interval = (uint32_t) floor(365 / NUM_EVENTS);
-  // if (wakeupNum % interval == 0)
-  // {
-  //   EventPayload event = createEventPayload(deviceId);
-  //   EmptyMemory(&event, sizeof(EventPayload));
-  //   send(&socket, &aMessageInfo, (void *) &event, sizeof(EventPayload));
-  // }
+  uint32_t interval = (uint32_t) floor(365 / NUM_EVENTS);
+  if (wakeupNum % interval == 0)
+  {
+    EventPayload event = createEventPayload(deviceId);
+    EmptyMemory(&event, sizeof(EventPayload));
+    send(&socket, &aMessageInfo, (void *) &event, sizeof(EventPayload), EVENT_URI);
+    numPacketsInFlight += 1;
+  }
 
   BatteryPayload battery = createBatteryPayload(deviceId);
   EmptyMemory(&battery, sizeof(BatteryPayload));
-  send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload));
+  send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload), BATTERY_URI);
   numPacketsInFlight += 1;
 
   return;

@@ -5,7 +5,7 @@
  */
 #include "main.h"
 
-otIp6Address getServerIp(void)
+static inline otIp6Address getServerIp(void)
 {
   otIp6Address address;
   EmptyMemory(&address, sizeof(otIp6Address));
@@ -28,6 +28,9 @@ void app_main(void)
     otLogCritPlat("Cannot start CoAP service. Reason: %s.", otThreadErrorToString(error));
     return;
   }
+
+  socket.mAddress = getServerIp();
+  socket.mPort = CONFIG_COAP_SERVER_PORT;
 
   return;
 }

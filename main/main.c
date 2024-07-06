@@ -6,8 +6,8 @@
 #include "main.h"
 
 #define BATTERY_URI "battery"
-#define SLEEP_TIME_SECONDS 30
-#define SLEEP_TIME_US SECONDS_TO_US(SLEEP_TIME_SECONDS)
+#define ONE_DAY_IN_SECONDS 30
+#define ONE_DAY_IN_US SECONDS_TO_US(ONE_DAY_IN_SECONDS)
 
 #define PrintError(error) otThreadErrorToString(error)
 
@@ -17,6 +17,15 @@ static inline otIp6Address getServerIp(void)
   EmptyMemory(&address, sizeof(otIp6Address));
   otIp6AddressFromString(CONFIG_SERVER_IP_ADDRESS, &address);
   return address;
+}
+void responseCallback(void *aContext,
+                     otMessage *aMessage,
+                     const otMessageInfo *aMessageInfo,
+                     otError aResult)
+{
+  ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(ONE_DAY_IN_US));
+  esp_deep_sleep_start();
+  return;
 }
 
 void send(otSockAddr *socket,
@@ -63,7 +72,7 @@ void send(otSockAddr *socket,
   }
 
   error = otCoapSendRequest(esp_openthread_get_instance(), aRequest, aMessageInfo,
-                            NULL, NULL);
+                            responseCallback, NULL);
   if (error != OT_ERROR_NONE)
   {
     otLogCritPlat("Failed to send CoAP request. Reason: %s.", PrintError(error));

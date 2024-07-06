@@ -9,9 +9,13 @@
 #define ONE_DAY_IN_SECONDS 30
 #define ONE_DAY_IN_US SECONDS_TO_US(ONE_DAY_IN_SECONDS)
 
+#define NVS_NAMESPACE "nvs_sed"
+#define NVS_UUID "uuid"
+
 static struct timeval wakeup;
 
 #define PrintError(error) otThreadErrorToString(error)
+#define IsDeepSleepWakeup() esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_UNDEFINED
 
 static inline otIp6Address getServerIp(void)
 {
@@ -106,11 +110,26 @@ void app_main(void)
   otMessageInfo aMessageInfo;
   uuid deviceId;
   BatteryPayload payload;
+  nvs_handle_t handle = 0;
 
   EmptyMemory(&socket, sizeof(otSockAddr));
-  EmptyMemory(&aMessageInfo, sizeof(aMessageInfo));
-  EmptyMemory(&aMessageInfo, sizeof(uuid));
+  EmptyMemory(&aMessageInfo, sizeof(otMessageInfo));
+  EmptyMemory(&deviceId, sizeof(uuid));
   EmptyMemory(&payload, sizeof(BatteryPayload));
+
+  ESP_ERROR_CHECK(nvs_open(NVS_NAMESPACE, NVS_READWRITE, &handle));
+  if (IsDeepSleepWakeup())
+  {
+    size_t uuidSize = sizeof(uuid);
+    ESP_ERROR_CHECK(nvs_get_blob(handle, NVS_UUID, &deviceId, &uuidSize));
+  }
+  else
+  {
+    // Device just powered on.
+    generateUUID(&deviceId);
+    ESP_ERROR_CHECK(nvs_set_blob(handle, NVS_UUID, &deviceId, sizeof(uuid)));
+  }
+  nvs_close(handle);
 
   otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SOCK_PORT);
   if (error != OT_ERROR_NONE)
@@ -122,7 +141,6 @@ void app_main(void)
   socket.mAddress = getServerIp();
   socket.mPort = CONFIG_COAP_SERVER_PORT;
 
-  generateUUID(&deviceId);
   payload = createBatteryPayload(deviceId);
   send(&socket, &aMessageInfo, (void *) &payload, sizeof(BatteryPayload));
 

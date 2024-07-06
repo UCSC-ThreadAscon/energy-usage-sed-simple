@@ -46,5 +46,12 @@ void app_main(void)
   aMessageInfo.mSockAddr = *otThreadGetMeshLocalEid(esp_openthread_get_instance());
   aMessageInfo.mSockPort = CONFIG_COAP_SOCK_PORT;
 
+  aRequest = otCoapNewMessage(esp_openthread_get_instance(), NULL);
+  if (aRequest == NULL)
+  {
+    otLogCritPlat("Failed to create CoAP request.");
+    return;
+  }
+
   return;
 }

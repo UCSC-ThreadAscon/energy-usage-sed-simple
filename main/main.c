@@ -4,6 +4,9 @@
  * be found at: https://github.com/UCSC-ThreadAscon/openthread/tree/main/src/cli
  */
 #include "main.h"
+#include "experiment.h"
+
+#include "math.h"
 
 #define BATTERY_URI "battery"
 #define ONE_DAY_IN_SECONDS 30
@@ -14,6 +17,7 @@
 #define NVS_WAKEUP_NUM "wakeup_num"
 
 static struct timeval wakeup;
+static uint8_t numPacketsInFlight;
 
 #define PrintError(error) otThreadErrorToString(error)
 #define IsDeepSleepWakeup() esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_UNDEFINED
@@ -26,24 +30,32 @@ static inline otIp6Address getServerIp(void)
   return address;
 }
 
-/**
- * If the duration of the wakeup is >= 30 seconds; TOO LONG. Stop sending packets, and
- * stop going to sleep. When the device stops sending packets, I know the experiment is
- * invalid and to rerun it.
- */
 void responseCallback(void *aContext,
                      otMessage *aMessage,
                      const otMessageInfo *aMessageInfo,
                      otError aResult)
 {
-  struct timeval current = getTimevalNow();
-  uint64_t wakeupDurationUs = timeDiffUs(wakeup, current);
-
-  if (wakeupDurationUs < ONE_DAY_IN_US)
+  /**
+   * If there are still packets left in flight, the callback returns, and
+   * we wait until all packets have been ACKed.
+   */
+  numPacketsInFlight -= 1;
+  if (numPacketsInFlight == 0)
   {
-    uint64_t sleepTimeUs = ONE_DAY_IN_US - wakeupDurationUs;
-    ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
-    esp_deep_sleep_start();
+    struct timeval current = getTimevalNow();
+    uint64_t wakeupDurationUs = timeDiffUs(wakeup, current);
+
+    /**
+     * If the duration of the wakeup is >= 30 seconds; TOO LONG. Stop sending packets, and
+     * stop going to sleep. When the device stops sending packets, I know the experiment is
+     * invalid and to rerun it.
+     */
+    if (wakeupDurationUs < ONE_DAY_IN_US)
+    {
+      uint64_t sleepTimeUs = ONE_DAY_IN_US - wakeupDurationUs;
+      ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
+      esp_deep_sleep_start();
+    }
   }
   return;
 }
@@ -110,14 +122,13 @@ void app_main(void)
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;
-  BatteryPayload payload;
   nvs_handle_t handle = 0;
   uint32_t wakeupNum = 0;
+  numPacketsInFlight = 0;
 
   EmptyMemory(&socket, sizeof(otSockAddr));
   EmptyMemory(&aMessageInfo, sizeof(otMessageInfo));
   EmptyMemory(&deviceId, sizeof(uuid));
-  EmptyMemory(&payload, sizeof(BatteryPayload));
 
   ESP_ERROR_CHECK(nvs_open(NVS_NAMESPACE, NVS_READWRITE, &handle));
   if (IsDeepSleepWakeup())
@@ -158,8 +169,21 @@ void app_main(void)
   socket.mAddress = getServerIp();
   socket.mPort = CONFIG_COAP_SERVER_PORT;
 
-  payload = createBatteryPayload(deviceId);
-  send(&socket, &aMessageInfo, (void *) &payload, sizeof(BatteryPayload));
+  /**
+   * Send an event packet every "floor(365/n)" wakeups.
+   */
+  // uint32_t interval = (uint32_t) floor(365 / NUM_EVENTS);
+  // if (wakeupNum % interval == 0)
+  // {
+  //   EventPayload event = createEventPayload(deviceId);
+  //   EmptyMemory(&event, sizeof(EventPayload));
+  //   send(&socket, &aMessageInfo, (void *) &event, sizeof(EventPayload));
+  // }
+
+  BatteryPayload battery = createBatteryPayload(deviceId);
+  EmptyMemory(&battery, sizeof(BatteryPayload));
+  send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload));
+  numPacketsInFlight += 1;
 
   return;
 }

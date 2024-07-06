@@ -160,7 +160,6 @@ void ot_task_worker(void *aContext)
     // Initialize the esp_netif bindings
     openthread_netif = init_openthread_netif(&config);
     esp_netif_set_default_netif(openthread_netif);
-    otSetStateChangedCallback(esp_openthread_get_instance(), ot_state_change_callback, NULL);
 
     create_config_network(esp_openthread_get_instance());
 

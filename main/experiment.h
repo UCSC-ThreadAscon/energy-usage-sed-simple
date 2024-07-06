@@ -1,5 +1,8 @@
 #pragma once
 
+/**
+ * How many event packets that the devices will send per year.
+ */
 #define NUM_EVENTS_FRONT_DOOR 36
 #define NUM_EVENTS_AIR_MONITOR 10
 #define NUM_EVENTS_BACK_DOOR 2

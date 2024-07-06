@@ -42,9 +42,10 @@ menu "OpenThread Deep Sleep Sender"
     config SCENARIO
       int 'The specific role that the device will play during the experiment.'
       default 1
-      range 1 3
+      range 1 4
       help
           Enter "1" if the device simulates the motion sensor at the front door.
           Enter "2" if the device simulates the air quality monitor in the bedroom.
           Enter "3" if the device simulates the motion sensor at the back door.
+          Enter "4" for the device to send an event packet every wakeup (used for debugging purposes).
 endmenu

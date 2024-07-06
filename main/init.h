@@ -37,6 +37,8 @@
 
 #define TAG "energy_usage_experiment"
 
+void init(void);
+
 void create_config_network(otInstance *instance);
 esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t *config);
 void ot_state_change_callback(otChangedFlags changed_flags, void* ctx);

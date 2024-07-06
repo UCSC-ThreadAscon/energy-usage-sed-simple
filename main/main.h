@@ -1,8 +1,11 @@
 #pragma once
 
 #include "init.h"
-
 #include <openthread/coap.h>
+
+#define BATTERY_URI "battery"
+
+#define CONNECTION_WAIT_TIME_MS 5000
 
 /**
  * Empties all memory for `size` bytes starting at memory address `pointer`.
@@ -18,3 +21,5 @@ static inline void EmptyMemory(void* pointer, size_t size) {
   memset(pointer, 0, size);
   return;
 }
+
+void checkConnection(otInstance *aInstance);

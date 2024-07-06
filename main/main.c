@@ -5,11 +5,21 @@
  */
 #include "main.h"
 
-#define BATTERY_URI "battery"
+otIp6Address getServerIp(void)
+{
+  otIp6Address address;
+  EmptyMemory(&address, sizeof(otIp6Address));
+  otIp6AddressFromString(CONFIG_SERVER_IP_ADDRESS, &address);
+  return address;
+}
 
 void app_main(void)
 {
   init();
+  checkConnection(esp_openthread_get_instance());
+
+  otSockAddr socket;
+  EmptyMemory(&socket, sizeof(otSockAddr));
 
   otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SERVER_PORT);
   if (error != OT_ERROR_NONE)

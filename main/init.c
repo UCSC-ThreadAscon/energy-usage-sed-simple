@@ -12,35 +12,12 @@
  * CONDITIONS OF ANY KIND, either express or implied.
 */
 
-#include <stdint.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include "esp_err.h"
-#include "esp_event.h"
-#include "esp_log.h"
-#include "esp_sleep.h"
-#include "esp_timer.h"
-#include "esp_openthread.h"
-#include "esp_openthread_netif_glue.h"
-#include "esp_ot_sleepy_device_config.h"
-#include "esp_vfs_eventfd.h"
-#include "nvs_flash.h"
-#include "driver/rtc_io.h"
-#include "driver/uart.h"
-#include "openthread/logging.h"
-#include "openthread/thread.h"
-
-#if !SOC_IEEE802154_SUPPORTED
-#error "Openthread sleepy device is only supported for the SoCs which have IEEE 802.15.4 module"
-#endif
-
-#define TAG "ot_esp_power_save"
+#include "init.h"
 
 static RTC_DATA_ATTR struct timeval s_sleep_enter_time;
 static esp_timer_handle_t s_oneshot_timer;
 
-static void create_config_network(otInstance *instance)
+void create_config_network(otInstance *instance)
 {
     otLinkModeConfig linkMode = { 0 };
 
@@ -60,7 +37,7 @@ static void create_config_network(otInstance *instance)
     ESP_ERROR_CHECK(esp_openthread_auto_start(NULL));
 }
 
-static esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t *config)
+esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t *config)
 {
     esp_netif_config_t cfg = ESP_NETIF_DEFAULT_OPENTHREAD();
     esp_netif_t *netif = esp_netif_new(&cfg);
@@ -70,7 +47,7 @@ static esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t
     return netif;
 }
 
-static void ot_state_change_callback(otChangedFlags changed_flags, void* ctx)
+void ot_state_change_callback(otChangedFlags changed_flags, void* ctx)
 {
     OT_UNUSED_VARIABLE(ctx);
     static otDeviceRole s_previous_role = OT_DEVICE_ROLE_DISABLED;
@@ -88,7 +65,7 @@ static void ot_state_change_callback(otChangedFlags changed_flags, void* ctx)
     s_previous_role = role;
 }
 
-static void s_oneshot_timer_callback(void* arg)
+void s_oneshot_timer_callback(void* arg)
 {
     // Enter deep sleep
     ESP_LOGI(TAG, "Enter deep sleep");
@@ -96,7 +73,7 @@ static void s_oneshot_timer_callback(void* arg)
     esp_deep_sleep_start();
 }
 
-static void ot_deep_sleep_init(void)
+void ot_deep_sleep_init(void)
 {
     // Within this function, we print the reason for the wake-up and configure the method of waking up from deep sleep.
     // This example provides support for two wake-up sources from deep sleep: RTC timer and GPIO.
@@ -164,7 +141,7 @@ static void ot_deep_sleep_init(void)
 }
 
 
-static void ot_task_worker(void *aContext)
+void ot_task_worker(void *aContext)
 {
     esp_openthread_platform_config_t config = {
         .radio_config = ESP_OPENTHREAD_DEFAULT_RADIO_CONFIG(),
@@ -198,23 +175,4 @@ static void ot_task_worker(void *aContext)
 
     esp_vfs_eventfd_unregister();
     vTaskDelete(NULL);
-}
-
-
-void app_main(void)
-{
-    // Used eventfds:
-    // * netif
-    // * ot task queue
-    // * radio driver
-    esp_vfs_eventfd_config_t eventfd_config = {
-        .max_fds = 3,
-    };
-
-    ESP_ERROR_CHECK(nvs_flash_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_vfs_eventfd_register(&eventfd_config));
-
-    xTaskCreate(ot_task_worker, "ot_power_save_main", 4096, NULL, 5, NULL);
 }

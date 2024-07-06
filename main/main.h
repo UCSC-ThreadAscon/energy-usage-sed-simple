@@ -5,8 +5,6 @@
 
 #define BATTERY_URI "battery"
 
-#define CONNECTION_WAIT_TIME_MS 5000
-
 /**
  * Empties all memory for `size` bytes starting at memory address `pointer`.
  *

@@ -35,7 +35,7 @@
 #error "Openthread sleepy device is only supported for the SoCs which have IEEE 802.15.4 module"
 #endif
 
-#define TAG "ot_esp_power_save"
+#define TAG "energy_usage_experiment"
 
 void create_config_network(otInstance *instance);
 esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t *config);

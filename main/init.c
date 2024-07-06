@@ -152,8 +152,6 @@ void ot_task_worker(void *aContext)
     // Initialize the OpenThread stack
     ESP_ERROR_CHECK(esp_openthread_init(&config));
 
-    ot_deep_sleep_init();
-
 #if CONFIG_OPENTHREAD_LOG_LEVEL_DYNAMIC
     // The OpenThread log level directly matches ESP log level
     (void)otLoggingSetLevel(CONFIG_LOG_DEFAULT_LEVEL);

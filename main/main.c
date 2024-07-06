@@ -17,6 +17,7 @@ void app_main(void)
 {
   init();
   checkConnection(esp_openthread_get_instance());
+  printMeshLocalEid(esp_openthread_get_instance());
 
   otSockAddr socket;
   EmptyMemory(&socket, sizeof(otSockAddr));

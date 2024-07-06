@@ -1,11 +1,7 @@
 /**
- * TODO:
- *
- * 1. Send a Battery packet, then go to deep sleep for 30 seconds once getting response.
- *
- * 2. Then, calculate the time it takes to send the Battery packet and receive a response.
- *    Go to sleep for:
- *        30 - (time it takes to wake up, send Battery packet, and receive response).
+ * All of the code in this file is based upon the both CoAP and CoAP secure source code
+ * used as a part of the OpenThread codebase. The CoAP and CoAP secure source files can
+ * be found at: https://github.com/UCSC-ThreadAscon/openthread/tree/main/src/cli
  */
 #include "main.h"
 

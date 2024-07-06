@@ -11,6 +11,7 @@
 
 #define NVS_NAMESPACE "nvs_sed"
 #define NVS_UUID "uuid"
+#define NVS_WAKEUP_NUM "wakeup_num"
 
 static struct timeval wakeup;
 
@@ -111,6 +112,7 @@ void app_main(void)
   uuid deviceId;
   BatteryPayload payload;
   nvs_handle_t handle = 0;
+  uint32_t wakeupNum = 0;
 
   EmptyMemory(&socket, sizeof(otSockAddr));
   EmptyMemory(&aMessageInfo, sizeof(otMessageInfo));
@@ -122,14 +124,29 @@ void app_main(void)
   {
     size_t uuidSize = sizeof(uuid);
     ESP_ERROR_CHECK(nvs_get_blob(handle, NVS_UUID, &deviceId, &uuidSize));
+
+    ESP_ERROR_CHECK(nvs_get_u32(handle, NVS_WAKEUP_NUM, &wakeupNum));
+    wakeupNum += 1;
+    ESP_ERROR_CHECK(nvs_set_u32(handle, NVS_WAKEUP_NUM, wakeupNum));
   }
   else
   {
-    // Device just powered on.
+    /**
+     * Device just powered on.
+     */
     generateUUID(&deviceId);
     ESP_ERROR_CHECK(nvs_set_blob(handle, NVS_UUID, &deviceId, sizeof(uuid)));
+  
+    /**
+     * To ensure the event "n" packets get sent every "floor(365/n)" wakeups,
+     * we will count the device powering on as the "first wakeup".
+     */
+    wakeupNum = 1;
+    ESP_ERROR_CHECK(nvs_set_u32(handle, NVS_WAKEUP_NUM, wakeupNum));
   }
   nvs_close(handle);
+
+  otLogNotePlat("Wakeup number %" PRIu32 ".", wakeupNum);
 
   otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SOCK_PORT);
   if (error != OT_ERROR_NONE)

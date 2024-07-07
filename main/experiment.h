@@ -10,7 +10,7 @@
 /**
  * Send an event packet every wakeup. Used for debugging purposes.
  */
-#define NUM_EVENTS_DEBUG 100
+#define NUM_EVENTS_DEBUG 365
 
 #if (CONFIG_SCENARIO == 1)
 #define NUM_EVENTS NUM_EVENTS_FRONT_DOOR

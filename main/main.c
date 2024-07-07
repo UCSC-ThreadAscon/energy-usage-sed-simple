@@ -36,6 +36,7 @@ void responseCallback(void *aContext,
                      const otMessageInfo *aMessageInfo,
                      otError aResult)
 {
+  otLogNotePlat("Received a response!");
   /**
    * If there are still packets left in flight, the callback returns, and
    * we wait until all packets have been ACKed.

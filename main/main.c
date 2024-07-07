@@ -190,7 +190,6 @@ void app_main(void)
     numPacketsInFlight = 2;
 
     EventPayload event = createEventPayload(deviceId);
-    EmptyMemory(&event, sizeof(EventPayload));
     send(&socket, &aMessageInfo, (void *) &event, sizeof(EventPayload), EVENT_URI);
   }
   else
@@ -200,7 +199,6 @@ void app_main(void)
   }
 
   BatteryPayload battery = createBatteryPayload(deviceId);
-  EmptyMemory(&battery, sizeof(BatteryPayload));
   send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload), BATTERY_URI);
   return;
 }

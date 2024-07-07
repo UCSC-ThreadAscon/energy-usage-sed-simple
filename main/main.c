@@ -177,16 +177,24 @@ void app_main(void)
   uint32_t interval = (uint32_t) floor(365 / NUM_EVENTS);
   if (wakeupNum % interval == 0)
   {
+    /**
+     * You send both an event and battery packet. You NEVER send event packets
+     * WITHOUT a battery packet.
+     */
+    numPacketsInFlight = 2;
+
     EventPayload event = createEventPayload(deviceId);
     EmptyMemory(&event, sizeof(EventPayload));
     send(&socket, &aMessageInfo, (void *) &event, sizeof(EventPayload), EVENT_URI);
-    numPacketsInFlight += 1;
+  }
+  else
+  {
+    // You only send a battery packet.
+    numPacketsInFlight = 1;
   }
 
   BatteryPayload battery = createBatteryPayload(deviceId);
   EmptyMemory(&battery, sizeof(BatteryPayload));
   send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload), BATTERY_URI);
-  numPacketsInFlight += 1;
-
   return;
 }

@@ -156,6 +156,14 @@ void app_main(void)
      */
     wakeupNum = 1;
     ESP_ERROR_CHECK(nvs_set_u32(handle, NVS_WAKEUP_NUM, wakeupNum));
+
+#if (CONFIG_SCENARIO == 1)
+  otLogNotePlat("This device is the front door motion sensor.");
+#elif (CONFIG_SCENARIO == 2)
+  otLogNotePlat("This device is the air quality monitor.");
+#else
+  otLogNotePlat("This device is the back door motion sensor.");
+#endif
   }
   nvs_close(handle);
 

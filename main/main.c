@@ -46,8 +46,6 @@ void responseCallback(void *aContext,
     struct timeval current = getTimevalNow();
     uint64_t wakeupDurationUs = timeDiffUs(wakeup, current);
 
-    otLogNotePlat("Woke up for ~%.3f seconds.", US_TO_SECONDS((double) wakeupDurationUs));
-
     /**
      * If the duration of the wakeup is >= 30 seconds; TOO LONG. Stop sending packets, and
      * stop going to sleep. When the device stops sending packets, I know the experiment is

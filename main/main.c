@@ -159,8 +159,6 @@ void app_main(void)
   }
   nvs_close(handle);
 
-  otLogNotePlat("Wakeup number %" PRIu32 ".", wakeupNum);
-
   otError error = otCoapStart(esp_openthread_get_instance(), CONFIG_COAP_SOCK_PORT);
   if (error != OT_ERROR_NONE)
   {

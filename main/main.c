@@ -226,6 +226,5 @@ void app_main(void)
 {
   wakeup = getTimevalNow();
   init();
-  checkConnection(esp_openthread_get_instance());
   return;
 }

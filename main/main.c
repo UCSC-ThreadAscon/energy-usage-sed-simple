@@ -57,15 +57,6 @@ void responseCallback(void *aContext,
       ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
       esp_deep_sleep_start();
     }
-    else
-    {
-      double wakeupSeconds = US_TO_SECONDS((double) wakeupDurationUs);
-      otLogCritPlat("----------------------------------");
-      otLogCritPlat("Wakeup is longer than 30 seconds!");
-      otLogCritPlat("Wakeup time: ~%.5f seconds", wakeupSeconds);
-      otLogCritPlat("Exiting the experiment.");
-      otLogCritPlat("----------------------------------");
-    }
   }
   return;
 }
@@ -123,8 +114,13 @@ void send(otSockAddr *socket,
   return;
 }
 
-void energyExperimentMain(void)
+void app_main(void)
 {
+  wakeup = getTimevalNow();
+  init();
+  checkConnection(esp_openthread_get_instance());
+  printMeshLocalEid(esp_openthread_get_instance());
+
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;
@@ -168,8 +164,6 @@ void energyExperimentMain(void)
 #else
   otLogNotePlat("This device is the back door motion sensor.");
 #endif
-
-  printMeshLocalEid(esp_openthread_get_instance());
   }
   nvs_close(handle);
 
@@ -206,33 +200,5 @@ void energyExperimentMain(void)
 
   BatteryPayload battery = createBatteryPayload(deviceId);
   send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload), BATTERY_URI);
-}
-
-/**
- * Comes from the "ot_state_change_callback()" function given in the ESP-IDF
- * OpenThread SED example:
- * https://github.com/espressif/esp-idf/blob/master/examples/openthread/ot_sleepy_device/deep_sleep/main/esp_ot_sleepy_device.c#L73
- */
-void otStateChangeCallback(otChangedFlags changed_flags, void* ctx)
-{
-    OT_UNUSED_VARIABLE(ctx);
-    static otDeviceRole s_previous_role = OT_DEVICE_ROLE_DISABLED;
-    otInstance* instance = esp_openthread_get_instance();
-    if (!instance) {
-        return;
-    }
-    otDeviceRole role = otThreadGetDeviceRole(instance);
-    if (role == OT_DEVICE_ROLE_CHILD && s_previous_role != OT_DEVICE_ROLE_CHILD)
-    {
-      energyExperimentMain();
-    }
-    s_previous_role = role;
-}
-
-void app_main(void)
-{
-  wakeup = getTimevalNow();
-  init();
-  energyExperimentMain();
   return;
 }

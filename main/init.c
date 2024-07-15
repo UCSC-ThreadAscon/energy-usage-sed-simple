@@ -47,6 +47,24 @@ esp_netif_t *init_openthread_netif(const esp_openthread_platform_config_t *confi
     return netif;
 }
 
+void ot_state_change_callback(otChangedFlags changed_flags, void* ctx)
+{
+    OT_UNUSED_VARIABLE(ctx);
+    static otDeviceRole s_previous_role = OT_DEVICE_ROLE_DISABLED;
+    otInstance* instance = esp_openthread_get_instance();
+    if (!instance) {
+        return;
+    }
+    otDeviceRole role = otThreadGetDeviceRole(instance);
+    if (role == OT_DEVICE_ROLE_CHILD && s_previous_role != OT_DEVICE_ROLE_CHILD) {
+        // Start the one-shot timer
+        const int before_deep_sleep_time_sec = 5;
+        ESP_LOGI(TAG, "Start one-shot timer for %ds to enter the deep sleep", before_deep_sleep_time_sec);
+        ESP_ERROR_CHECK(esp_timer_start_once(s_oneshot_timer, before_deep_sleep_time_sec * 1000000));
+    }
+    s_previous_role = role;
+}
+
 void s_oneshot_timer_callback(void* arg)
 {
     // Enter deep sleep

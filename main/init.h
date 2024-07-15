@@ -38,6 +38,7 @@
 
 #define TAG "energy_usage_experiment"
 
+void otStateChangeCallback(otChangedFlags changed_flags, void* ctx);
 void init(void);
 
 void setTxPower(void);

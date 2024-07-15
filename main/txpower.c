@@ -55,8 +55,7 @@ void setTxPower(void)
    * Check that the TX power was actually set correctly.
    */
   int8_t txPower;
-  otError error = otPlatRadioGetTransmitPower(esp_openthread_get_instance(),
-                                              &txPower);
-  assert(txPower == CONFIG_TX_POWER);
+  error = otPlatRadioGetTransmitPower(esp_openthread_get_instance(), &txPower);
+  assert((error == OT_ERROR_NONE) && (txPower == CONFIG_TX_POWER));
   return;
 }

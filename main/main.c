@@ -118,7 +118,6 @@ void app_main(void)
 {
   wakeup = getTimevalNow();
   init();
-  checkConnection(esp_openthread_get_instance());
   printMeshLocalEid(esp_openthread_get_instance());
 
   otSockAddr socket;

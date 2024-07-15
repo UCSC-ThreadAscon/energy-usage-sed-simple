@@ -1,19 +1,5 @@
 #include "main.h"
 
-#define CONNECTION_WAIT_TIME_MS 1000
-
-void checkConnection(otInstance *aInstance)
-{
-  otDeviceRole role;
-  do {
-    role = otThreadGetDeviceRole(aInstance);
-    vTaskDelay(CONNECTION_WAIT_TIME_MS / portTICK_PERIOD_MS);
-  }
-  while((role == OT_DEVICE_ROLE_DISABLED) || (role == OT_DEVICE_ROLE_DETACHED));
-
-  return;
-}
-
 /**
  * Printing out Mesh Local EID, as this is the recommended IPv6 address
  * to be used at the application layer.

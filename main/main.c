@@ -118,7 +118,6 @@ void app_main(void)
 {
   wakeup = getTimevalNow();
   init();
-  printMeshLocalEid(esp_openthread_get_instance());
 
   otSockAddr socket;
   otMessageInfo aMessageInfo;
@@ -163,6 +162,8 @@ void app_main(void)
 #else
   otLogNotePlat("This device is the back door motion sensor.");
 #endif
+
+  printMeshLocalEid(esp_openthread_get_instance());
   }
   nvs_close(handle);
 

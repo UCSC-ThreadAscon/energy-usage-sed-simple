@@ -4,6 +4,8 @@
 #include "esp_random.h"
 #include <openthread/coap.h>
 
+void otStateChangeCallback(otChangedFlags changed_flags, void* ctx);
+
 /**
  * Empties all memory for `size` bytes starting at memory address `pointer`.
  *

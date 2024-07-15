@@ -200,6 +200,28 @@ void energyExperimentMain(void)
   return;
 }
 
+/**
+ * This function comes from the OpenThread SED example program given in ESP-IDF:
+ * https://github.com/espressif/esp-idf/blob/master/examples/openthread/ot_sleepy_device/deep_sleep/main/esp_ot_sleepy_device.c#L73
+ */
+void otStateChangeCallback(otChangedFlags changed_flags, void* ctx)
+{
+    OT_UNUSED_VARIABLE(ctx);
+
+    static otDeviceRole s_previous_role = OT_DEVICE_ROLE_DISABLED;
+    otInstance* instance = esp_openthread_get_instance();
+    if (!instance) {
+        return;
+    }
+
+    otDeviceRole role = otThreadGetDeviceRole(instance);
+    if (role == OT_DEVICE_ROLE_CHILD && s_previous_role != OT_DEVICE_ROLE_CHILD)
+    {
+      energyExperimentMain();
+    }
+    s_previous_role = role;
+}
+
 void app_main(void)
 {
   wakeup = getTimevalNow();

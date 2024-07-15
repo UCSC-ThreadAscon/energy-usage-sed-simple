@@ -116,6 +116,8 @@ void send(otSockAddr *socket,
 
 void energyExperimentMain(void)
 {
+  printMeshLocalEid(esp_openthread_get_instance());
+
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;
@@ -204,7 +206,6 @@ void app_main(void)
   init();
   checkConnection(esp_openthread_get_instance());
 
-  printMeshLocalEid(esp_openthread_get_instance());
   energyExperimentMain();
   return;
 }

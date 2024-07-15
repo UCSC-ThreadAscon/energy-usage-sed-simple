@@ -134,6 +134,7 @@ void send(otSockAddr *socket,
 
 void printIndependentVars(void)
 {
+  PrintDelimiter();
   printMeshLocalEid(esp_openthread_get_instance());
 
   int8_t currentPower = 0;
@@ -149,6 +150,7 @@ void printIndependentVars(void)
 #else
   otLogNotePlat("This device is the back door motion sensor.");
 #endif
+  PrintDelimiter();
   return;
 }
 

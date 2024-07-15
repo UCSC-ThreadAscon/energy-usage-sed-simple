@@ -132,28 +132,6 @@ void send(otSockAddr *socket,
   return;
 }
 
-void printIndependentVars(void)
-{
-  PrintDelimiter();
-  printMeshLocalEid(esp_openthread_get_instance());
-
-  int8_t currentPower = 0;
-  if (getTxPower(&currentPower) != OT_ERROR_NONE)
-  {
-    otLogCritPlat("Failed to get TX Power.");
-  }
-
-#if (CONFIG_SCENARIO == 1)
-  otLogNotePlat("This device is the front door motion sensor.");
-#elif (CONFIG_SCENARIO == 2)
-  otLogNotePlat("This device is the air quality monitor.");
-#else
-  otLogNotePlat("This device is the back door motion sensor.");
-#endif
-  PrintDelimiter();
-  return;
-}
-
 void energyExperimentMain(void)
 {
   otSockAddr socket;

@@ -114,11 +114,8 @@ void send(otSockAddr *socket,
   return;
 }
 
-void app_main(void)
+void energyExperimentMain(void)
 {
-  wakeup = getTimevalNow();
-  init();
-
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;
@@ -200,5 +197,12 @@ void app_main(void)
 
   BatteryPayload battery = createBatteryPayload(deviceId);
   send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload), BATTERY_URI);
+}
+
+void app_main(void)
+{
+  wakeup = getTimevalNow();
+  init();
+  energyExperimentMain();
   return;
 }

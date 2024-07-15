@@ -3,7 +3,6 @@
 
 void printIndependentVars(void)
 {
-  PrintDelimiter();
 #if (CIPHER_SUITE == AES)
   otLogNotePlat("Cipher Suite: AES");
 #elif (CIPHER_SUITE == NONE)
@@ -29,6 +28,5 @@ void printIndependentVars(void)
 #endif
 
   printMeshLocalEid(esp_openthread_get_instance());
-  PrintDelimiter();
   return;
 }

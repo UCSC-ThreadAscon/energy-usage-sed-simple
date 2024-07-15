@@ -50,5 +50,13 @@ void setTxPower(void)
     default:
       otLogCritPlat("Cannot Handle Error: %" PRIu8 ",", error);
   }
+
+  /**
+   * Check that the TX power was actually set correctly.
+   */
+  int8_t txPower;
+  otError error = otPlatRadioGetTransmitPower(esp_openthread_get_instance(),
+                                              &txPower);
+  assert(txPower == CONFIG_TX_POWER);
   return;
 }

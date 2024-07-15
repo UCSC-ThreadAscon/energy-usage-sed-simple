@@ -19,7 +19,6 @@ static inline void EmptyMemory(void* pointer, size_t size) {
   return;
 }
 
-void checkConnection(otInstance *aInstance);
 void printMeshLocalEid(otInstance *aInstance);
 
 /**

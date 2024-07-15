@@ -23,6 +23,24 @@ static uint8_t numPacketsInFlight;
 #define PrintError(error) otThreadErrorToString(error)
 #define IsDeepSleepWakeup() esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_UNDEFINED
 
+/**
+ * Printing out Mesh Local EID, as this is the recommended IPv6 address
+ * to be used at the application layer.
+ * https://openthread.io/guides/thread-primer/ipv6-addressing#link-local-address-lla
+*/
+void printMeshLocalEid(otInstance *aInstance)
+{
+  const otIp6Address *meshLocalEid = otThreadGetMeshLocalEid(aInstance);
+
+  char mleidString[OT_IP6_ADDRESS_STRING_SIZE];
+  EmptyMemory(mleidString, OT_IP6_ADDRESS_STRING_SIZE);
+
+  otIp6AddressToString(meshLocalEid, mleidString, OT_IP6_ADDRESS_STRING_SIZE);
+
+  otLogNotePlat("The Mesh Local EID is %s.", mleidString);
+  return;
+}
+
 static inline otIp6Address getServerIp(void)
 {
   otIp6Address address;

@@ -50,11 +50,5 @@ void setTxPower(void)
     default:
       otLogCritPlat("Cannot Handle Error: %" PRIu8 ",", error);
   }
-
-  int8_t currentPower = 0;
-  if (getTxPower(&currentPower) != OT_ERROR_NONE)
-  {
-    otLogCritPlat("Failed to get TX Power.");
-  }
   return;
 }

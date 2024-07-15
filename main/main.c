@@ -132,10 +132,28 @@ void send(otSockAddr *socket,
   return;
 }
 
-void energyExperimentMain(void)
+void printIndependentVars(void)
 {
   printMeshLocalEid(esp_openthread_get_instance());
 
+  int8_t currentPower = 0;
+  if (getTxPower(&currentPower) != OT_ERROR_NONE)
+  {
+    otLogCritPlat("Failed to get TX Power.");
+  }
+
+#if (CONFIG_SCENARIO == 1)
+  otLogNotePlat("This device is the front door motion sensor.");
+#elif (CONFIG_SCENARIO == 2)
+  otLogNotePlat("This device is the air quality monitor.");
+#else
+  otLogNotePlat("This device is the back door motion sensor.");
+#endif
+  return;
+}
+
+void energyExperimentMain(void)
+{
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;
@@ -172,13 +190,10 @@ void energyExperimentMain(void)
     wakeupNum = 1;
     ESP_ERROR_CHECK(nvs_set_u32(handle, NVS_WAKEUP_NUM, wakeupNum));
 
-#if (CONFIG_SCENARIO == 1)
-  otLogNotePlat("This device is the front door motion sensor.");
-#elif (CONFIG_SCENARIO == 2)
-  otLogNotePlat("This device is the air quality monitor.");
-#else
-  otLogNotePlat("This device is the back door motion sensor.");
-#endif
+    /**
+     * Print the independent variables of the experiment ONCE on power on.
+     */
+    printIndependentVars();
   }
   nvs_close(handle);
 

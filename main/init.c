@@ -24,7 +24,12 @@ void create_config_network(otInstance *instance)
     linkMode.mDeviceType = false;
     linkMode.mNetworkData = false;
 
-    if (otLinkSetPollPeriod(instance, CONFIG_POLL_PERIOD) != OT_ERROR_NONE) {
+    /**
+     * Use the default poll period of 30 seconds, that is given by the ESP-IDF
+     * OpenThread SED example, that this code is taken from:
+     * https://github.com/UCSC-ThreadAscon/esp-idf/tree/master/examples/openthread/ot_sleepy_device/deep_sleep/main
+     */
+    if (otLinkSetPollPeriod(instance, CONFIG_OPENTHREAD_NETWORK_POLLPERIOD_TIME) != OT_ERROR_NONE) {
         ESP_LOGE(TAG, "Failed to set OpenThread pollperiod.");
         abort();
     }

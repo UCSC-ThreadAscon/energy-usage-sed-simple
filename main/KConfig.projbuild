@@ -14,14 +14,6 @@ menu "OpenThread Deep Sleep Sender"
         Set the 802.15.4 transmission power (in dBm) for OpenThread.
         The recommended TX power values are 20 dBm, 9 dBm, 0 dBm, and -25 dBm.
 
-    config POLL_PERIOD
-      int 'Set the poll period of the Sleepy End Device'
-      range 0 67108863
-      default 3000
-      help
-          The poll period (in ms) determines how often the Sleepy End Device will
-          ask to its parent router for updates on any packets it has received.
-
     config COAP_SERVER_PORT
       int 'The port number for the CoAP server.'
       default 5683

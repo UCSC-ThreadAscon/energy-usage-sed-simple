@@ -75,13 +75,6 @@ void responseCallback(void *aContext,
       ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
       esp_deep_sleep_start();
     }
-    else
-    {
-      double wakeupSeconds = US_TO_SECONDS((double) wakeupDurationUs);
-      otLogCritPlat("Wakeup time is more than 30 seconds!");
-      otLogCritPlat("Wakeup time: ~%.5f", wakeupSeconds);
-      otLogCritPlat("Stopping the experiment.");
-    }
   }
   return;
 }

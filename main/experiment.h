@@ -2,7 +2,7 @@
 
 #include <sdkconfig.h>
 
-void printIndependentVars(void);
+void printVariables(void);
 
 #define CIPHER_SUITE CONFIG_THREAD_ASCON_CIPHER_SUITE
 #define AES 0

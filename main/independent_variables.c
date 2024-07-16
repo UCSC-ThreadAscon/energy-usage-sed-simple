@@ -1,7 +1,7 @@
 #include "main.h"
 #include "experiment.h"
 
-void printIndependentVars(void)
+void printVariables(void)
 {
 #if (CIPHER_SUITE == AES)
   otLogNotePlat("Cipher Suite: AES");

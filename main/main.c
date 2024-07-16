@@ -180,7 +180,7 @@ void energyExperimentMain(void)
     /**
      * Print the independent variables of the experiment ONCE on power on.
      */
-    printIndependentVars();
+    printVariables();
   }
   nvs_close(handle);
 

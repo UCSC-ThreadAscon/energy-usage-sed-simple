@@ -1,6 +1,8 @@
 #include "main.h"
 #include "experiment.h"
 
+#include <openthread/link.h>
+
 void printVariables(void)
 {
 #if (CIPHER_SUITE == AES)
@@ -26,6 +28,9 @@ void printVariables(void)
 #else
   otLogNotePlat("This device is the back door motion sensor.");
 #endif
+
+  uint32_t pollPeriod = otLinkGetPollPeriod(esp_openthread_get_instance());
+  otLogNotePlat("The Poll Period is %" PRIu32 " ms", pollPeriod);
 
   printMeshLocalEid(esp_openthread_get_instance());
   return;

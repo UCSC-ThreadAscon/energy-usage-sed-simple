@@ -3,8 +3,12 @@
 
 #include <openthread/link.h>
 
+#define PrintDelimiter() otLogNotePlat("---------------------------");
+
 void printVariables(void)
 {
+  PrintDelimiter();
+
 #if (CIPHER_SUITE == AES)
   otLogNotePlat("Cipher Suite: AES");
 #elif (CIPHER_SUITE == NONE)
@@ -33,5 +37,7 @@ void printVariables(void)
   otLogNotePlat("The Poll Period is %" PRIu32 " ms", pollPeriod);
 
   printMeshLocalEid(esp_openthread_get_instance());
+
+  PrintDelimiter();
   return;
 }

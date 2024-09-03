@@ -14,9 +14,9 @@ void printVariables(void)
 #elif (CIPHER_SUITE == NONE)
   otLogNotePlat("Cipher Suite: No Encryption");
 #elif (CIPHER_SUITE == LIBASCON_128A)
-  otLogNotePlat("Cipher Suite: ASCON-128a");
+  otLogNotePlat("Cipher Suite: ASCON-128a (LibAscon)");
 #elif (CIPHER_SUITE == LIBASCON_128)
-  otLogNotePlat("Cipher Suite: ASCON-128");
+  otLogNotePlat("Cipher Suite: ASCON-128 (LibAscon)");
 #endif
 
   int8_t currentPower = 0;

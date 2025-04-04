@@ -34,7 +34,7 @@ void printVariables(void)
 #endif
 
   uint32_t pollPeriod = otLinkGetPollPeriod(esp_openthread_get_instance());
-  otLogNotePlat("The Poll Period is %" PRIu32 " ms", pollPeriod);
+  otLogNotePlat("The Poll Period is %" PRIu32 " ms.", pollPeriod);
 
   printMeshLocalEid(esp_openthread_get_instance());
 

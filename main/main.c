@@ -54,37 +54,47 @@ void responseCallback(void *aContext,
                      const otMessageInfo *aMessageInfo,
                      otError aResult)
 {
-  /**
-   * If there are still packets left in flight, the callback returns, and
-   * we wait until all packets have been ACKed.
-   */
-  numPacketsInFlight -= 1;
-  if (numPacketsInFlight == 0)
+  if (aResult != OT_ERROR_NONE)
   {
-    struct timeval current = getTimevalNow();
-    uint64_t wakeupDurationUs = timeDiffUs(wakeup, current);
+    otLogCritPlat("Failed to receive ACK from Border Router.");
+    otLogCritPlat("Reason: %s", PrintError(aResult));
+  }
+  else
+  {
+    numPacketsInFlight -= 1;
+    otLogNotePlat("Received ACK from Border Router.");
 
     /**
-     * If the duration of the wakeup is >= 30 seconds; TOO LONG. Stop sending packets, and
-     * stop going to sleep. When the device stops sending packets, I know the experiment is
-     * invalid and to rerun it.
+     * If there are still packets left in flight, the callback returns, and
+     * we wait until all packets have been ACKed.
      */
-    if (wakeupDurationUs < ONE_DAY_IN_US)
+    if (numPacketsInFlight == 0)
     {
-      uint64_t sleepTimeUs = ONE_DAY_IN_US - wakeupDurationUs;
-      ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
+      struct timeval current = getTimevalNow();
+      uint64_t wakeupDurationUs = timeDiffUs(wakeup, current);
 
-      otLogNotePlat("Going to deep sleep for %" PRIu64 " us.", sleepTimeUs);
-      esp_deep_sleep_start();
-    }
-    else
-    {
-      double wakeupDurationSecs = US_TO_SECONDS((double) wakeupDurationUs);
+      /**
+       * If the duration of the wakeup is >= 30 seconds; TOO LONG. Stop sending packets, and
+       * stop going to sleep. When the device stops sending packets, I know the experiment is
+       * invalid and to rerun it.
+       */
+      if (wakeupDurationUs < ONE_DAY_IN_US)
+      {
+        uint64_t sleepTimeUs = ONE_DAY_IN_US - wakeupDurationUs;
+        ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
 
-      PrintCritDelimiter();
-      otLogCritPlat("Wakeup Duration: ~%.3f seconds", wakeupDurationSecs);
-      otLogCritPlat("Invalid Experiment: Wakeup Duration is GREATER THAN 30 seconds.");
-      PrintCritDelimiter();
+        otLogNotePlat("Going to deep sleep for %" PRIu64 " us.", sleepTimeUs);
+        esp_deep_sleep_start();
+      }
+      else // numPacketsInFlight > 0
+      {
+        double wakeupDurationSecs = US_TO_SECONDS((double) wakeupDurationUs);
+
+        PrintCritDelimiter();
+        otLogCritPlat("Wakeup Duration: ~%.3f seconds", wakeupDurationSecs);
+        otLogCritPlat("Invalid Experiment: Wakeup Duration is GREATER THAN 30 seconds.");
+        PrintCritDelimiter();
+      }
     }
   }
   return;

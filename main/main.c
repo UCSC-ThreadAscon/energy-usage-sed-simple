@@ -77,8 +77,10 @@ void responseCallback(void *aContext,
     }
     else
     {
+      double wakeupDurationSecs = US_TO_SECONDS((double) wakeupDurationUs);
+
       PrintCritDelimiter();
-      otLogCritPlat("Wakeup Duration: ~%.3f seconds", US_TO_SECONDS(wakeupDurationUs));
+      otLogCritPlat("Wakeup Duration: ~%.3f seconds", wakeupDurationSecs);
       otLogCritPlat("Invalid Experiment: Wakeup Duration is GREATER THAN 30 seconds.");
       PrintCritDelimiter();
     }

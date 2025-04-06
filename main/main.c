@@ -56,7 +56,7 @@ void responseCallback(void *aContext,
 {
   if (aResult != OT_ERROR_NONE)
   {
-    otLogCritPlat("Failed to receive ACK from Border Router.");
+    otLogCritPlat("Invalid Experiment: Failed to receive ACK from Border Router.");
     otLogCritPlat("Reason: %s", PrintError(aResult));
   }
   else
@@ -252,7 +252,21 @@ void otStateChangeCallback(otChangedFlags changed_flags, void* ctx)
     otDeviceRole role = otThreadGetDeviceRole(instance);
     if (role == OT_DEVICE_ROLE_CHILD && s_previous_role != OT_DEVICE_ROLE_CHILD)
     {
-      energyExperimentMain();
+      int8_t txPower = 0;
+      otError error = getTxPower(&txPower);
+
+      if ((error == OT_ERROR_NONE) && (txPower = CONFIG_TX_POWER))
+      {
+        energyExperimentMain();
+      }
+      else
+      {
+        PrintDelimiter();
+        otLogCritPlat("Expected TX Power: %" PRId8 " dBm", CONFIG_TX_POWER);
+        otLogCritPlat("Actual TX Power: %" PRId8 " dBm", txPower);
+        otLogCritPlat("Invalid Experiment: TX Power mismatch.");
+        PrintDelimiter();
+      }
     }
     s_previous_role = role;
 }

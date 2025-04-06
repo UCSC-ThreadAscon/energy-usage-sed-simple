@@ -73,6 +73,8 @@ void responseCallback(void *aContext,
     {
       uint64_t sleepTimeUs = ONE_DAY_IN_US - wakeupDurationUs;
       ESP_ERROR_CHECK(esp_sleep_enable_timer_wakeup(sleepTimeUs));
+
+      otLogNotePlat("Going to deep sleep for %" PRIu64 " us.", sleepTimeUs);
       esp_deep_sleep_start();
     }
     else
@@ -143,6 +145,8 @@ void send(otSockAddr *socket,
 
 void energyExperimentMain(void)
 {
+  printVariables();
+
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;
@@ -178,11 +182,6 @@ void energyExperimentMain(void)
      */
     wakeupNum = 1;
     ESP_ERROR_CHECK(nvs_set_u32(handle, NVS_WAKEUP_NUM, wakeupNum));
-
-    /**
-     * Print the independent variables of the experiment ONCE on power on.
-     */
-    printVariables();
   }
   nvs_close(handle);
 
@@ -210,6 +209,8 @@ void energyExperimentMain(void)
 
     EventPayload event = createEventPayload(deviceId);
     send(&socket, &aMessageInfo, (void *) &event, sizeof(EventPayload), EVENT_URI);
+
+    otLogNotePlat("Sent Event Packet.");
   }
   else
   {
@@ -219,6 +220,8 @@ void energyExperimentMain(void)
 
   BatteryPayload battery = createBatteryPayload(deviceId);
   send(&socket, &aMessageInfo, (void *) &battery, sizeof(BatteryPayload), BATTERY_URI);
+
+  otLogNotePlat("Sent Battery Packet.");
   return;
 }
 

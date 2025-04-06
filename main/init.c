@@ -165,7 +165,7 @@ void ot_task_worker(void *aContext)
     openthread_netif = init_openthread_netif(&config);
     esp_netif_set_default_netif(openthread_netif);
 
-    setTxPower();
+    // setTxPower();
 
     /**
      * Following the OpenThread SED ESP-IDF example program:

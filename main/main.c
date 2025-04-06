@@ -261,11 +261,11 @@ void otStateChangeCallback(otChangedFlags changed_flags, void* ctx)
       }
       else
       {
-        PrintDelimiter();
+        PrintCritDelimiter();
         otLogCritPlat("Expected TX Power: %" PRId8 " dBm", CONFIG_TX_POWER);
         otLogCritPlat("Actual TX Power: %" PRId8 " dBm", txPower);
         otLogCritPlat("Invalid Experiment: TX Power mismatch.");
-        PrintDelimiter();
+        PrintCritDelimiter();
       }
     }
     s_previous_role = role;

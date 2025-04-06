@@ -4,6 +4,9 @@
 #include "esp_random.h"
 #include <openthread/coap.h>
 
+#define PrintDelimiter() otLogNotePlat("---------------------------");
+#define PrintCritDelimiter() otLogCritPlat("---------------------------");
+
 /**
  * Empties all memory for `size` bytes starting at memory address `pointer`.
  *

@@ -3,8 +3,6 @@
 
 #include <openthread/link.h>
 
-#define PrintDelimiter() otLogNotePlat("---------------------------");
-
 void printVariables(void)
 {
   PrintDelimiter();

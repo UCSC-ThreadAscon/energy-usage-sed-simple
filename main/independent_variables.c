@@ -28,7 +28,7 @@ void printVariables(void)
 #elif (CONFIG_SCENARIO == 2)
   otLogNotePlat("This device is the air quality monitor.");
 #else
-  otLogNotePlat("This device is the back door motion sensor.");
+  otLogNotePlat("This device is the window sensor.");
 #endif
 
   uint32_t pollPeriod = otLinkGetPollPeriod(esp_openthread_get_instance());

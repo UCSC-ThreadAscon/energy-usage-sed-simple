@@ -15,7 +15,7 @@ void printVariables(void);
  */
 #define NUM_EVENTS_FRONT_DOOR 36
 #define NUM_EVENTS_AIR_MONITOR 10
-#define NUM_EVENTS_WINDOW 2
+#define NUM_EVENTS_WINDOW 12
 
 /**
  * Send an event packet every wakeup. Used for debugging purposes.

@@ -27,7 +27,7 @@ void printVariables(void)
   otLogNotePlat("This device is the front door motion sensor.");
 #elif (CONFIG_SCENARIO == 2)
   otLogNotePlat("This device is the air quality monitor.");
-#else
+#elif (CONFIG_SCENARIO == 3)
   otLogNotePlat("This device is the window sensor.");
 #endif
 

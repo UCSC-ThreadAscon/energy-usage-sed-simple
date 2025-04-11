@@ -12,6 +12,7 @@
  * CONDITIONS OF ANY KIND, either express or implied.
 */
 #include "init.h"
+#include "experiment.h"
 
 static RTC_DATA_ATTR struct timeval s_sleep_enter_time;
 static esp_timer_handle_t s_oneshot_timer;
@@ -204,4 +205,5 @@ void init(void) {
     ESP_ERROR_CHECK(esp_vfs_eventfd_register(&eventfd_config));
 
     xTaskCreate(ot_task_worker, "ot_power_save_main", 4096, NULL, 5, NULL);
+    printVariables();
 }

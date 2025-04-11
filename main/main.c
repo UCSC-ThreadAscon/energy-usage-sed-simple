@@ -155,8 +155,6 @@ void send(otSockAddr *socket,
 
 void energyExperimentMain(void)
 {
-  printVariables();
-
   otSockAddr socket;
   otMessageInfo aMessageInfo;
   uuid deviceId;

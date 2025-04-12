@@ -12,7 +12,6 @@
  * CONDITIONS OF ANY KIND, either express or implied.
 */
 #include "init.h"
-#include "experiment.h"
 
 static RTC_DATA_ATTR struct timeval s_sleep_enter_time;
 static esp_timer_handle_t s_oneshot_timer;
@@ -178,9 +177,6 @@ void ot_task_worker(void *aContext)
     otSetStateChangedCallback(esp_openthread_get_instance(), otStateChangeCallback, NULL);
 
     create_config_network(esp_openthread_get_instance());
-
-    // Print independent variables before starting OpenThread.
-    printVariables();
 
     // Run the main loop
     esp_openthread_launch_mainloop();

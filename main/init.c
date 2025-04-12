@@ -165,8 +165,6 @@ void ot_task_worker(void *aContext)
     openthread_netif = init_openthread_netif(&config);
     esp_netif_set_default_netif(openthread_netif);
 
-    setTxPower();
-
     /**
      * Following the OpenThread SED ESP-IDF example program:
      * https://github.com/espressif/esp-idf/blob/master/examples/openthread/ot_sleepy_device/deep_sleep/main/esp_ot_sleepy_device.c#L187C5-L187C51

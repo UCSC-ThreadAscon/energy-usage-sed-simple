@@ -179,6 +179,9 @@ void ot_task_worker(void *aContext)
 
     create_config_network(esp_openthread_get_instance());
 
+    // Print independent variables before starting OpenThread.
+    printVariables();
+
     // Run the main loop
     esp_openthread_launch_mainloop();
 
@@ -205,5 +208,5 @@ void init(void) {
     ESP_ERROR_CHECK(esp_vfs_eventfd_register(&eventfd_config));
 
     xTaskCreate(ot_task_worker, "ot_power_save_main", 4096, NULL, 5, NULL);
-    printVariables();
+    return;
 }

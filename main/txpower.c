@@ -4,8 +4,6 @@
 #include <openthread/platform/radio.h>
 #include <assert.h>
 
-#define TX_POWER_DEBUG 0
-
 otError getTxPower(int8_t *aPowerAddr)
 {
   otError error = otPlatRadioGetTransmitPower(esp_openthread_get_instance(),
@@ -42,9 +40,7 @@ void setTxPower(void)
       break;
 
     case (OT_ERROR_NONE):
-#if TX_POWER_DEBUG
       otLogNotePlat("Successfully set TX Power.");
-#endif
       break;
 
     default:

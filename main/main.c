@@ -250,6 +250,7 @@ void otStateChangeCallback(otChangedFlags changed_flags, void* ctx)
     otDeviceRole role = otThreadGetDeviceRole(instance);
     if (role == OT_DEVICE_ROLE_CHILD && s_previous_role != OT_DEVICE_ROLE_CHILD)
     {
+      setTxPower();
       int8_t txPower = 0;
       otError error = getTxPower(&txPower);
 

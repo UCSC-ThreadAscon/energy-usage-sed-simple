@@ -255,6 +255,7 @@ void otStateChangeCallback(otChangedFlags changed_flags, void* ctx)
 
       if ((error == OT_ERROR_NONE) && (txPower == CONFIG_TX_POWER))
       {
+        printVariables();
         energyExperimentMain();
       }
       else

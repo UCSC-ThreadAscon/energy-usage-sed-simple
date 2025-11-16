@@ -96,7 +96,7 @@ void ot_deep_sleep_init(void)
     struct timeval now;
     gettimeofday(&now, NULL);
     int sleep_time_ms = (now.tv_sec - s_sleep_enter_time.tv_sec) * 1000 + (now.tv_usec - s_sleep_enter_time.tv_usec) / 1000;
-    esp_sleep_wakeup_cause_t wake_up_cause = esp_sleep_get_wakeup_cause();
+    esp_sleep_wakeup_cause_t wake_up_cause = esp_sleep_get_wakeup_causes();
     switch (wake_up_cause) {
     case ESP_SLEEP_WAKEUP_TIMER: {
         ESP_LOGI(TAG, "Wake up from timer. Time spent in deep sleep and boot: %dms", sleep_time_ms);

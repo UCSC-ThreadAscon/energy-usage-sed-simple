@@ -9,6 +9,8 @@ void printVariables(void);
 #define NONE 1
 #define LIBASCON_128A 4
 #define LIBASCON_128 5
+#define ASCON_AEAD_128 6
+#define CHA_CHA_POLY 7
 
 /**
  * How many event packets that the devices will send per year.
